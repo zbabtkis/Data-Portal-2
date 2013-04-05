@@ -1,0 +1,96 @@
+/** App */
+
+#cec-data {
+	height: 600px;
+	background: #f4f4f4;
+	padding: 15px;
+	border-radius: 2px;
+	border: 1px solid #aaa;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-o-border-radius: 5px;
+}
+#cec-data ul{
+	margin: 0;
+}
+
+/** App Cols */
+#cec-data-selector {
+	width: 40%;
+	height: 100%;
+	float: left;
+	margin: 1%;
+}
+#cec-data-wrapper {
+	width: 55%;
+	height: 100%;
+	float: left;
+	margin: 1%;
+}
+
+/** Data list */
+#data-selector-head {
+	height: 10%;
+}
+#cec-data-list {
+	background: #89c5bd;
+	list-style: none;
+	height: 90%;
+	overflow: auto;
+}
+#cec-data-list li {
+	padding: 5px;
+	cursor: pointer;
+}
+#cec-data-list .row-even {
+	background: #77b4af;
+}
+
+/** data-view */
+.cec-data-header-text {
+	height: 10%;
+	margin: 0;
+}
+#cec-data-data {
+	height: 90%;
+	overflow: auto;
+}
+
+/** Full Screen */
+#cec-data.data-portal-overlay {  
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:999999999999999999;
+}
+
+/** Buttons */
+#cec-data-nav-buttons {
+	float: right;
+}
+#cec-data-nav-buttons div{
+	width: 32px;
+	height: 32px;
+	float: left;
+	margin: 0 5px 0 5px;
+	cursor: pointer;
+	background-color: none;
+	background: url('../img/action-links.png');
+}
+#cec-portal-full-screen {
+	background-position: 64px 0 !important;
+}
+#cec-portal-full-screen:hover {
+	background-position: 64px 32px !important;
+}
+#cec-portal-small-screen {
+	background-position: 32px 0 !important;
+}
+#cec-portal-small-screen:hover {
+	background-position: 32px 32px !important;
+}
+.cec-button.back:hover {
+	background-position: 0 32px !important;
+}

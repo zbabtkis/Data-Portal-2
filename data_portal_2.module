@@ -1,0 +1,178 @@
+<?php
+/**
+ * @file
+ * Drupal data portal module -- provides backend for javascript web application.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function data_portal_2_menu() {
+	$items = array();
+
+	// Main data portal page that web app is rendered on.
+	$items['data/portal'] = array(
+		'title' => 'Data Portal',
+		'description' => t('Web portal data collection'),
+		'page callback' => 'data_portal_2_page_gen',
+		'access arguments' => array('access data portal'),
+	  'type' => MENU_NORMAL_ITEM);
+	// RESTful API for data.
+	$items['data/portal/files'] = array(
+		'title' => t('hello'),
+		'page callback' => 'data_portal_2_api',
+		'access arguments' => array('access data portal'),
+		'type' => MENU_CALLBACK);
+	// Module configuration menu.
+	return($items);
+}
+
+function data_portal_2_page_gen() {
+	global $base_url;
+	$module_path = $base_url . '/' . drupal_get_path('module', 'data_portal_2') . '/';
+
+    // Add javascript app files and dependencies.
+    drupal_add_library('system', 'ui.draggable');
+    drupal_add_js($module_path . 'js/lib/handlebars.js');
+    drupal_add_js($module_path . 'js/lib/underscore-min.js');
+    drupal_add_js($module_path . 'js/lib/backbone-min.js');
+    drupal_add_js($module_path . 'js/lib/antiscroll.js');
+    drupal_add_js($module_path . 'js/Model/file.js');
+    drupal_add_js($module_path . 'js/app.js');
+    drupal_add_js($module_path . 'js/View/files.js');
+
+	$page = theme('data_portal_2_template');
+
+	//$files = data_portal_2_crawl();
+
+	return($page);
+}
+function data_portal_2_permission() {
+	$items = array();
+	$items['access data portal'] = array(
+		'title' => 'Access Data Portal Content',
+		'description' => t('Access content from the biogeog data portal'));
+	return($items);
+}
+function data_portal_2_theme() {
+	$themes = array(
+		'data_portal_2_template' => array(
+			'template' => 'data_portal_2_template',
+		),
+	);
+	return($themes);
+}
+function data_portal_2_crawl() {
+	$files = array();
+	$currArray = "";
+	$fs = array();
+
+	$year = date('Y');
+	$basePath = "/home/snow/cues/data/" . $year;
+
+	$year = 'year_' . $year;
+	$mongo = new MongoClient();
+	$db = $mongo->dataportal;
+	$table = $db->$year;
+
+	$table->drop();
+
+	exec("ls -R $basePath", $files);
+
+	foreach($files as $file) {
+		if(substr($file, -1) == ':') {
+			// Set the current array key to the name without the trailing ':'.
+			$currArray = rtrim($file, ':');
+			$currArray = ltrim($currArray, $basePath);
+		} elseif($file != '') {
+			$entry = array(
+				'path' => $currArray,
+				'fileName' => $file
+			);
+			$table->insert($entry);
+		}
+	}
+}
+
+function get_data($id = null) {
+	$mongo = new MongoClient();
+	$db = $mongo->dataportal;
+	$table = $db->year_2013;
+	$rs = array();
+	$dir = '';
+
+
+	if($id != null) {
+		$dir = $table->findOne(
+			array(
+				'_id' => new MongoId($id)
+			)
+		);
+		$dir = (($dir['path'] != null) ? $dir['path'] . '/' : '') . $dir['fileName'];
+	}
+
+	$pid = (get_pid($dir)) ? get_pid($dir) : 0;
+
+	$page = $_GET['page'] ? $_GET['page'] : 0;
+	$count = $_GET['count'] ? $_GET['count'] : 10;
+
+	$res = $table->find(
+		array(
+			'path' => $dir
+		)
+	)->skip($page)->limit($count);
+
+	foreach($res as $r) {
+		$rs[] = $r;
+	}
+
+	array_pop($dir);
+
+	$return = array(
+		'results' => $rs,
+		'pid'     => $pid,
+		'path'    => $dir
+	);
+
+	print json_encode($return);
+}
+
+function get_pid($path) {
+	$mongo = new MongoClient();
+	$db = $mongo->dataportal;
+	$table = $db->year_2013;
+	$dir = explode('/', $path);
+	array_pop($dir);
+	$dir = implode('/', $dir);
+
+	$obj = $table->findOne(
+		array(
+			'fileName' => $dir
+		)
+	);
+
+	return $obj['_id'];
+}
+function data_portal_2_api() {
+	$rt = $_SERVER['REQUEST_METHOD'];
+
+	switch ($rt) {
+		case "GET":
+			$id = $_GET['id'];
+			get_data($id);
+			break;
+		case "POST":
+			//$id = $_POST['id'];
+			data_portal_2_crawl();
+			break;
+		case "PUT":
+			print "I'll put some data in there for you";
+			break;
+		case "DELETE":
+			print "I'll delete something for you";
+			break;
+		default:
+			print "I don't know what you did...";
+			break;
+	}
+}
