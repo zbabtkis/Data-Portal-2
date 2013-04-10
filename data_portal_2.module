@@ -24,6 +24,13 @@ function data_portal_2_menu() {
 		'access arguments' => array('access data portal'),
 		'type' => MENU_CALLBACK);
 	// Module configuration menu.
+	$items['admin/config/data-portal'] = array(
+		'title' => 'Data Portal Admin',
+		'description' => 'Data Portal Administration',
+		'page callback' => 'data_portal_2_crawl',
+		'access arguments' => array('administer data portal'),
+		'type' => MENU_NORMAL_ITEM
+	);
 	return($items);
 }
 
@@ -49,6 +56,10 @@ function data_portal_2_page_gen() {
 }
 function data_portal_2_permission() {
 	$items = array();
+	$items['administer data portal'] = array(
+		'title' => 'Administer Data Portal',
+		'description' => 'Set data portal configuration options and run db updates'
+	);
 	$items['access data portal'] = array(
 		'title' => 'Access Data Portal Content',
 		'description' => t('Access content from the biogeog data portal'));
@@ -75,8 +86,6 @@ function data_portal_2_crawl() {
 	$db = $mongo->dataportal;
 	$table = $db->$year;
 
-	$table->drop();
-
 	exec("ls -R $basePath", $files);
 
 	foreach($files as $file) {
@@ -89,7 +98,7 @@ function data_portal_2_crawl() {
 				'path' => $currArray,
 				'fileName' => $file
 			);
-			$table->insert($entry);
+			$table->update($entry, $entry, array('upsert' => TRUE));
 		}
 	}
 }
