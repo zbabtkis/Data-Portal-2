@@ -57,7 +57,7 @@
 }
 
 /** Full Screen */
-#cec-data.data-portal-overlay {  
+.data-portal-overlay {  
     position:fixed;
     top:0;
     left:0;
@@ -70,26 +70,27 @@
 #cec-data-nav-buttons {
 	float: right;
 }
-#cec-data-nav-buttons div{
+.cec-button{
 	width: 32px;
 	height: 32px;
 	float: left;
 	margin: 0 5px 0 5px;
 	cursor: pointer;
 	background-color: none;
+	list-style: none;
 	background: url('../img/action-links.png');
 }
-#cec-portal-full-screen {
+.full-screen {
 	background-position: 64px 0 !important;
 }
-#cec-portal-full-screen:hover {
+.full-screen:hover {
 	background-position: 64px 32px !important;
 }
-#cec-portal-small-screen {
-	background-position: 32px 0 !important;
+#toggle-screen {
+	background-position: 32px 0;
 }
-#cec-portal-small-screen:hover {
-	background-position: 32px 32px !important;
+#toggle-screen:hover {
+	background-position: 32px 32px;
 }
 .cec-button.back:hover {
 	background-position: 0 32px !important;

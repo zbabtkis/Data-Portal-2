@@ -38,14 +38,20 @@ function data_portal_2_page_gen() {
 	global $base_url;
 	$module_path = $base_url . '/' . drupal_get_path('module', 'data_portal_2') . '/';
 
-    // Add javascript app files and dependencies.
     drupal_add_library('system', 'ui.draggable');
+    // Libs
     drupal_add_js($module_path . 'js/lib/handlebars.js');
     drupal_add_js($module_path . 'js/lib/underscore-min.js');
     drupal_add_js($module_path . 'js/lib/backbone-min.js');
     drupal_add_js($module_path . 'js/lib/antiscroll.js');
+    // App Models
+    drupal_add_js($module_path . 'js/Model/page.js');
     drupal_add_js($module_path . 'js/Model/file.js');
+    // App Router
     drupal_add_js($module_path . 'js/app.js');
+    // App Views
+    drupal_add_js($module_path . 'js/View/controls.js');
+    drupal_add_js($module_path . 'js/View/path.js');
     drupal_add_js($module_path . 'js/View/files.js');
 
 	$page = theme('data_portal_2_template');
@@ -120,7 +126,7 @@ function get_data($id = null) {
 		$dir = (($dir['path'] != null) ? $dir['path'] . '/' : '') . $dir['fileName'];
 	}
 
-	$pid = (get_pid($dir)) ? get_pid($dir) : 0;
+	$pid = get_pid($dir);
 
 	$page = $_GET['page'] ? $_GET['page'] : 0;
 	$count = $_GET['count'] ? $_GET['count'] : 10;
@@ -150,6 +156,12 @@ function get_pid($path) {
 	$mongo = new MongoClient();
 	$db = $mongo->dataportal;
 	$table = $db->year_2013;
+	if($path == '') {
+		return -1;
+	} elseif (!strpos($path, '/')) {
+		return 0;
+	}
+	print($path);
 	$dir = explode('/', $path);
 	array_pop($dir);
 	$dir = implode('/', $dir);

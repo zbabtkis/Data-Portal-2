@@ -3,8 +3,10 @@
 	<nav id='cec-data-selector'>
 		<header id='data-selector-head'>
 			<nav id='cec-data-nav-buttons'>
-				<div id='cec-portal-full-screen' class='cec-button' title='Full Screen' alt='Full Screen'></div>
-				<div class='cec-button back'></div>
+				<ul>
+					<li id='toggle-screen' class='cec-button full-screen' title='Full Screen' alt='Full Screen'></li>
+					<li class='cec-button back'></li>
+				</ul>
 			</nav>
 			<aside class='data-head-wrapper'>
 				<label class='cec-data-header-text'>Path: </label>

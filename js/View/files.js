@@ -6,34 +6,8 @@
 var app = window.app || (window.app = {});
 
 (function($) {
+	app.View = app.View || {};
 	$(function() {
-		app.View = app.View || {};
-
-		/** HEADER */
-		var ControlBack = Backbone.View.extend({
-			el: '.cec-button.back',
-			events: {
-				'click' : 'goBack'
-			},
-			goBack: function() {
-				var pid = app.Collection.Files.pid;
-				if(pid) {
-					app.Router.navigate('file/' + pid, {trigger: true})
-				} else {
-					app.Router.navigate('', {trigger: true});
-				}
-			}
-		});
-		app.View.ControlBack = new ControlBack();
-
-		var Path = Backbone.View.extend({
-			el: '#data-path',
-			update: function() {
-				this.$el.html(app.Collection.Files.path);
-			}
-		});
-		app.View.Path = new Path();
-
 		var Files = Backbone.View.extend({
 		 	el: "#cec-data-list",
 		 	initialize: function() {
@@ -49,7 +23,13 @@ var app = window.app || (window.app = {});
 		 		app.View.Path.update();
 
 		 		app.Collection.Files.forEach(function(el) {
-		 			var i, item = new FileEl(el);
+		 			var i, item = new FileEl({
+		 				attributes: {
+		 					'data-id': el.get('_id'),
+		 					'data-path': el.get('path'),
+		 				},
+		 				value: el.get('fileName')
+		 			});
 		 			that.$el.append(item.$el);
 		 		});
 		 	},
@@ -68,20 +48,18 @@ var app = window.app || (window.app = {});
 			tagName: 'li',
 			initialize: function(el) {
 				_.bindAll(this);
-				this.id = el.get('_id');
-				this.render(el);
+				this.render(el.value);
 			},
-			render: function(el) {
-				this.$el.html(el.get('fileName'));
+			render: function(v) {
+				this.$el.html(v);
 			},
 			events: {
 				'click' : 'navigate'
 			},
 			navigate: function() {
-				app.Router.navigate('file/' + this.id, {trigger: true});
+				app.Router.navigate('file/' + this.$el.data('id'), {trigger: true});
 			}
 		});
-
 		app.View.Files = new Files();
 	});
 }(jQuery));
